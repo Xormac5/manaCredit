@@ -1,0 +1,50 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper: verifica che l'utente autenticato appartenga al negozio ──
+    function isShopMember(shopId) {
+      return request.auth != null
+          && request.auth.token.shop_id == shopId;
+    }
+
+    // ── Documento negozio (profilo) ─────────────────────────────────────
+    match /shops/{shopId} {
+      allow read:  if isShopMember(shopId);
+      allow write: if false; // Solo admin/backend può creare/modificare il doc negozio
+
+      // ── Staff ─────────────────────────────────────────────────────────
+      match /staff/{staffId} {
+        allow read:  if isShopMember(shopId);
+        allow write: if false; // Gestito da Cloud Functions / admin
+      }
+
+      // ── Wallets (saldo clienti) ───────────────────────────────────────
+      match /wallets/{walletId} {
+        allow read:  if isShopMember(shopId);
+        allow create: if isShopMember(shopId);
+        allow update: if isShopMember(shopId)
+                      && request.resource.data.keys().hasAll(['balance', 'updatedAt']);
+        allow delete: if false;
+      }
+
+      // ── Transactions (registro immutabile) ────────────────────────────
+      match /transactions/{txId} {
+        allow read:  if isShopMember(shopId);
+        allow create: if isShopMember(shopId)
+                      && request.resource.data.keys().hasAll(
+                           ['walletId', 'amount', 'type', 'reason', 'createdAt', 'createdBy']
+                         )
+                      && request.resource.data.type in ['credit', 'debit', 'reversal'];
+        allow update: if false;
+        allow delete: if false;
+      }
+    }
+
+    // ── Nega tutto il resto ─────────────────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
