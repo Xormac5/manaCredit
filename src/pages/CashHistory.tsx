@@ -1,15 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTransactions } from '../hooks/useTransactions';
-import { useWallet } from '../hooks/useWallet';
 import { useCashierOperations } from '../hooks/useCashierOperations';
-import TransactionList from '../components/TransactionList';
 import type { Transaction } from '../types';
 
 export default function CashHistory() {
   const navigate = useNavigate();
   const { getDailyTransactions } = useTransactions();
-  const { updateBalance } = useWallet();
   const { processReversal } = useCashierOperations();
   const [date, setDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [txs, setTxs] = useState<(Transaction & { id: string })[]>([]);

@@ -1,8 +1,17 @@
 @import "tailwindcss";
 
+:root {
+  --mana-bg: #0B0C10;
+  --mana-card: #14161C;
+  --mana-primary: #8B5CF6;
+  --mana-green: #10B981;
+  --mana-orange: #F97316;
+}
+
 /* Global Styles */
 body {
-  @apply bg-mana-bg text-white antialiased;
+  background-color: rgb(11, 12, 16);
+  color: white;
   font-family: 'Inter', -apple-system, system-ui, 'Segoe UI', sans-serif;
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
@@ -22,9 +31,9 @@ select {
 
 /* Smooth transitions */
 * {
-  @apply transition-colors duration-200;
+  transition: color 0.2s ease;
 }
 
 button {
-  @apply transition-all duration-300;
+  transition: all 0.3s ease;
 }

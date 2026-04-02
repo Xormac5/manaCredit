@@ -90,7 +90,3 @@ export default function TransactionList({
     </div>
   );
 }
-      ))}
-    </ul>
-  );
-}

@@ -53,7 +53,6 @@ export default function CustomerCard() {
   async function handleConfirm(amount: number) {
     if (!wallet) return;
     const type: TransactionType = sheetMode === 'credit' ? 'credit' : 'debit';
-    const delta = type === 'credit' ? amount : -amount;
 
     try {
       const newBalance = await processTransaction({
@@ -200,6 +199,5 @@ export default function CustomerCard() {
         />
       </BottomSheet>
     </div>
-  );
   );
 }
