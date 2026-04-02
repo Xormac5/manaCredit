@@ -10,7 +10,10 @@ import {
 } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../context/AuthContext';
+import { getMockData, saveMockData, delay } from '../lib/mockStore';
 import type { Transaction, TransactionType } from '../types';
+
+const USE_MOCK = import.meta.env.VITE_USE_MOCK_DATA === 'true';
 
 export function useTransactions() {
   const { shopId, user } = useAuth();
@@ -28,6 +31,18 @@ export function useTransactions() {
     reason: string;
     reversedTxId?: string;
   }) {
+    if (USE_MOCK) {
+      const mockData = getMockData();
+      const txId = `tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      mockData.transactions[txId] = {
+        id: txId,
+        ...data,
+        createdAt: new Date(),
+        createdBy: user?.email ?? 'mock-user',
+      };
+      saveMockData(mockData);
+      return delay(300, { id: txId } as any);
+    }
     return addDoc(txRef(), {
       ...data,
       createdAt: serverTimestamp(),
@@ -36,6 +51,18 @@ export function useTransactions() {
   }
 
   async function getRecentGlobal(count = 5): Promise<(Transaction & { id: string })[]> {
+    if (USE_MOCK) {
+      const mockData = getMockData();
+      const txs = Object.entries(mockData.transactions)
+        .map(([txId, tx]) => ({ ...tx, id: txId }))
+        .sort((a, b) => {
+          const aTime = a.createdAt instanceof Date ? a.createdAt.getTime() : 0;
+          const bTime = b.createdAt instanceof Date ? b.createdAt.getTime() : 0;
+          return bTime - aTime;
+        })
+        .slice(0, count);
+      return delay(200, txs);
+    }
     const q = query(txRef(), orderBy('createdAt', 'desc'), limit(count));
     const snap = await getDocs(q);
     return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Transaction) }));
@@ -45,6 +72,19 @@ export function useTransactions() {
     walletId: string,
     count = 20,
   ): Promise<(Transaction & { id: string })[]> {
+    if (USE_MOCK) {
+      const mockData = getMockData();
+      const txs = Object.entries(mockData.transactions)
+        .map(([txId, tx]) => ({ ...tx, id: txId }))
+        .filter((tx) => tx.walletId === walletId)
+        .sort((a, b) => {
+          const aTime = a.createdAt instanceof Date ? a.createdAt.getTime() : 0;
+          const bTime = b.createdAt instanceof Date ? b.createdAt.getTime() : 0;
+          return bTime - aTime;
+        })
+        .slice(0, count);
+      return delay(200, txs);
+    }
     const q = query(
       txRef(),
       where('walletId', '==', walletId),
@@ -59,6 +99,26 @@ export function useTransactions() {
     date: Date,
     count = 100,
   ): Promise<(Transaction & { id: string })[]> {
+    if (USE_MOCK) {
+      const mockData = getMockData();
+      const start = new Date(date);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(date);
+      end.setHours(23, 59, 59, 999);
+      const txs = Object.entries(mockData.transactions)
+        .map(([txId, tx]) => ({ ...tx, id: txId }))
+        .filter((tx) => {
+          const txTime = tx.createdAt instanceof Date ? tx.createdAt.getTime() : 0;
+          return txTime >= start.getTime() && txTime <= end.getTime();
+        })
+        .sort((a, b) => {
+          const aTime = a.createdAt instanceof Date ? a.createdAt.getTime() : 0;
+          const bTime = b.createdAt instanceof Date ? b.createdAt.getTime() : 0;
+          return bTime - aTime;
+        })
+        .slice(0, count);
+      return delay(200, txs);
+    }
     const start = new Date(date);
     start.setHours(0, 0, 0, 0);
     const end = new Date(date);
