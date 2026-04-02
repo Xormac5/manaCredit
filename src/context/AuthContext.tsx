@@ -31,14 +31,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (USE_MOCK) {
-      // Mock mode: controlla sessionStorage
+      // Mock mode: controlla sessionStorage al mount
       const mockUserStr = sessionStorage.getItem('mock_user');
       if (mockUserStr) {
         try {
           const mockUser = JSON.parse(mockUserStr);
           setState({
             user: mockUser,
-            shopId: 'SHOP_001', // Default shop per testing
+            shopId: 'SHOP_001',
             loading: false,
           });
         } catch {
@@ -47,6 +47,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else {
         setState({ user: null, shopId: null, loading: false });
       }
+
+      // Listener per custom events di login/logout
+      const handleMockLogin = (event: Event) => {
+        const customEvent = event as CustomEvent;
+        setState({
+          user: customEvent.detail,
+          shopId: 'SHOP_001',
+          loading: false,
+        });
+      };
+
+      const handleMockLogout = () => {
+        setState({ user: null, shopId: null, loading: false });
+      };
+
+      window.addEventListener('mock-login', handleMockLogin);
+      window.addEventListener('mock-logout', handleMockLogout);
+
+      return () => {
+        window.removeEventListener('mock-login', handleMockLogin);
+        window.removeEventListener('mock-logout', handleMockLogout);
+      };
     } else {
       // Firebase mode
       const unsubscribe = onAuthStateChanged(auth, async (user) => {

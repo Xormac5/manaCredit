@@ -35,15 +35,22 @@ export function useAuthActions() {
         // Simula latenza di rete
         await new Promise(resolve => setTimeout(resolve, 1000));
         // Salva il mock user in sessionStorage per la riconoscenza
-        sessionStorage.setItem('mock_user', JSON.stringify({
+        const mockUserData = {
           ...MOCK_USER,
           email,
-        }));
+        };
+        sessionStorage.setItem('mock_user', JSON.stringify(mockUserData));
+        
+        // Dispatch custom event per notificare AuthContext
+        window.dispatchEvent(new CustomEvent('mock-login', { detail: mockUserData }));
+        console.log('✅ Mock login successful:', email);
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Errore di login');
+      const errorMsg = err instanceof Error ? err.message : 'Errore di login';
+      console.error('❌ Login error:', errorMsg);
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -52,6 +59,8 @@ export function useAuthActions() {
   async function signOut() {
     if (USE_MOCK) {
       sessionStorage.removeItem('mock_user');
+      window.dispatchEvent(new CustomEvent('mock-logout'));
+      console.log('✅ Mock logout successful');
     } else {
       await firebaseSignOut(auth);
     }

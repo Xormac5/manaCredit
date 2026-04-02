@@ -1,11 +1,22 @@
-import { useState, type FormEvent } from 'react';
+import { useState, type FormEvent, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuthActions } from '../hooks/useAuth';
+import { useAuth } from '../context/AuthContext';
 import BigButton from '../components/ui/BigButton';
 
 export default function Login() {
+  const navigate = useNavigate();
+  const { user } = useAuth(); // Check if already logged in
   const { signIn, loading, error } = useAuthActions();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  // Se già loggato, vai al dashboard
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
