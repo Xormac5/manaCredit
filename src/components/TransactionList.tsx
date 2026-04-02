@@ -3,6 +3,7 @@ import type { Transaction } from '../types';
 interface Props {
   transactions: (Transaction & { id: string })[];
   showCustomer?: boolean;
+  compact?: boolean;
 }
 
 function formatDate(date: unknown): string {
@@ -13,41 +14,82 @@ function formatDate(date: unknown): string {
   return '—';
 }
 
-const typeBadge: Record<string, string> = {
-  credit: 'bg-emerald-100 text-emerald-700',
-  debit: 'bg-orange-100 text-orange-700',
-  reversal: 'bg-red-100 text-red-700',
-};
-
-export default function TransactionList({ transactions, showCustomer = false }: Props) {
+export default function TransactionList({
+  transactions,
+  showCustomer = false,
+  compact = false,
+}: Props) {
   if (transactions.length === 0) {
-    return <p className="text-center text-slate-400 py-4">Nessun movimento</p>;
+    return (
+      <div className="text-center py-6 text-slate-500 text-sm">
+        Nessun movimento
+      </div>
+    );
   }
 
   return (
-    <ul className="divide-y divide-slate-200 dark:divide-slate-700">
+    <div className="divide-y divide-slate-700/50">
       {transactions.map((tx) => (
-        <li key={tx.id} className="flex items-center justify-between py-3 px-1">
-          <div>
+        <div
+          key={tx.id}
+          className={`${
+            compact ? 'py-2' : 'py-3'
+          } px-2 hover:bg-mana-card-hover/30 transition-colors`}
+        >
+          <div className="flex items-center justify-between gap-3">
+            {/* Left: Info */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                {/* Type Badge */}
+                <span
+                  className={`text-xs px-2 py-0.5 rounded-full font-semibold whitespace-nowrap ${
+                    tx.type === 'credit'
+                      ? 'bg-mana-green/20 text-mana-green'
+                      : tx.type === 'debit'
+                      ? 'bg-mana-orange/20 text-mana-orange'
+                      : 'bg-slate-700/50 text-slate-300'
+                  }`}
+                >
+                  {tx.type === 'credit'
+                    ? '➕ Carica'
+                    : tx.type === 'debit'
+                    ? '➖ Scala'
+                    : '↻ Storno'}
+                </span>
+              </div>
+
+              {/* Customer or Reason */}
+              <p className="text-sm font-semibold text-white truncate">
+                {showCustomer ? tx.customerName : tx.reason}
+              </p>
+
+              {/* Timestamp */}
+              {!compact && (
+                <p className="text-xs text-slate-500 mt-1">
+                  {formatDate(tx.createdAt)}
+                </p>
+              )}
+            </div>
+
+            {/* Right: Amount */}
             <span
-              className={`inline-block text-xs font-semibold px-2 py-0.5 rounded-full mr-2 ${typeBadge[tx.type] ?? ''}`}
+              className={`font-bold text-base whitespace-nowrap ${
+                tx.type === 'credit'
+                  ? 'text-mana-green'
+                  : tx.type === 'debit'
+                  ? 'text-mana-orange'
+                  : 'text-slate-400'
+              }`}
             >
-              {tx.type === 'credit' ? '+' : tx.type === 'debit' ? '−' : '↩'}
+              {tx.type === 'credit' ? '+' : tx.type === 'debit' ? '−' : '↻'}€
+              {tx.amount.toFixed(2)}
             </span>
-            {showCustomer && (
-              <span className="font-medium text-sm text-slate-800 dark:text-slate-200">
-                {tx.customerName}
-              </span>
-            )}
-            <span className="text-xs text-slate-500 ml-2">{tx.reason}</span>
           </div>
-          <div className="text-right">
-            <span className={`font-bold ${tx.type === 'credit' ? 'text-emerald-600' : 'text-orange-600'}`}>
-              {tx.type === 'credit' ? '+' : '−'}€{Math.abs(tx.amount).toFixed(2)}
-            </span>
-            <p className="text-[10px] text-slate-400">{formatDate(tx.createdAt)}</p>
-          </div>
-        </li>
+        </div>
+      ))}
+    </div>
+  );
+}
       ))}
     </ul>
   );

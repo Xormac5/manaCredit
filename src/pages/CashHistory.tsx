@@ -2,13 +2,15 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTransactions } from '../hooks/useTransactions';
 import { useWallet } from '../hooks/useWallet';
+import { useCashierOperations } from '../hooks/useCashierOperations';
 import TransactionList from '../components/TransactionList';
 import type { Transaction } from '../types';
 
 export default function CashHistory() {
   const navigate = useNavigate();
-  const { getDailyTransactions, addTransaction } = useTransactions();
+  const { getDailyTransactions } = useTransactions();
   const { updateBalance } = useWallet();
+  const { processReversal } = useCashierOperations();
   const [date, setDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [txs, setTxs] = useState<(Transaction & { id: string })[]>([]);
 
@@ -20,74 +22,81 @@ export default function CashHistory() {
     if (!confirm(`Stornare ${tx.type === 'credit' ? '+' : '−'}€${tx.amount.toFixed(2)} di ${tx.customerName}?`)) {
       return;
     }
-    const reverseDelta = tx.type === 'credit' ? -tx.amount : tx.amount;
-    await updateBalance(tx.walletId, reverseDelta);
-    await addTransaction({
-      walletId: tx.walletId,
-      customerName: tx.customerName,
-      amount: tx.amount,
-      type: 'reversal',
-      reason: `Storno: ${tx.reason}`,
-      reversedTxId: tx.id,
-    });
+    
+    await processReversal(tx);
+    
     // Ricarica lista
     getDailyTransactions(new Date(date)).then(setTxs);
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col">
-      <header className="bg-indigo-600 text-white px-4 py-3 flex items-center gap-3">
-        <button onClick={() => navigate('/')} className="text-2xl">←</button>
-        <h1 className="font-bold text-lg">Storico Cassa</h1>
+    <div className="min-h-screen bg-mana-bg flex flex-col pb-20">
+      {/* Header */}
+      <header className="bg-mana-card border-b border-slate-700 text-white px-4 py-4 flex items-center gap-4">
+        <button onClick={() => navigate('/')} className="text-mana-primary hover:text-mana-primary-hover transition-colors text-2xl">
+          ←
+        </button>
+        <h1 className="font-bold text-xl">Storico Cassa</h1>
       </header>
 
       <main className="flex-1 p-4 flex flex-col gap-4">
-        <input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="h-12 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
+        {/* Date picker */}
+        <div>
+          <label className="text-xs text-slate-400 font-semibold uppercase mb-2 block">Data</label>
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="w-full h-12 rounded-xl border border-slate-700 bg-mana-card px-4 text-white focus:outline-none focus:ring-2 focus:ring-mana-primary transition-all"
+          />
+        </div>
 
-        <div className="bg-white dark:bg-slate-900 rounded-xl p-3 shadow-sm">
+        {/* Transactions list */}
+        <div className="bg-mana-card rounded-2xl shadow-lg border border-slate-700 flex-1 overflow-y-auto">
           {txs.length === 0 ? (
-            <p className="text-center text-slate-400 py-6">
+            <p className="text-center text-slate-500 py-8">
               Nessun movimento per questa data
             </p>
           ) : (
-            <ul className="divide-y divide-slate-200 dark:divide-slate-700">
+            <div className="divide-y divide-slate-700">
               {txs.map((tx) => (
-                <li
+                <div
                   key={tx.id}
-                  className="flex items-center justify-between py-3 px-1"
+                  className="flex items-center justify-between py-4 px-4 hover:bg-mana-card-hover transition-colors border-b border-slate-700/50 last:border-0"
                 >
-                  <div className="flex-1">
-                    <span className="font-medium text-sm text-slate-800 dark:text-slate-200">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm text-white truncate">
                       {tx.customerName}
-                    </span>
-                    <span className="text-xs text-slate-500 ml-2">
+                    </p>
+                    <p className="text-xs text-slate-400 truncate">
                       {tx.reason}
-                    </span>
+                    </p>
                   </div>
-                  <div className="text-right flex items-center gap-3">
+                  <div className="text-right flex items-center gap-4 ml-2">
                     <span
-                      className={`font-bold ${tx.type === 'credit' ? 'text-emerald-600' : 'text-orange-600'}`}
+                      className={`font-bold text-base ${
+                        tx.type === 'credit'
+                          ? 'text-mana-green'
+                          : tx.type === 'debit'
+                          ? 'text-mana-orange'
+                          : 'text-slate-400'
+                      }`}
                     >
-                      {tx.type === 'credit' ? '+' : '−'}€
+                      {tx.type === 'credit' ? '+' : tx.type === 'debit' ? '−' : '↻'}€
                       {tx.amount.toFixed(2)}
                     </span>
                     {tx.type !== 'reversal' && (
                       <button
                         onClick={() => handleReversal(tx)}
-                        className="text-xs text-red-500 underline"
+                        className="px-3 py-1 rounded-lg bg-mana-orange/20 text-mana-orange hover:bg-mana-orange/30 text-xs font-semibold transition-colors active:scale-95"
                       >
                         Storna
                       </button>
                     )}
                   </div>
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           )}
         </div>
       </main>

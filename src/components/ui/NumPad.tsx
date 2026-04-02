@@ -32,20 +32,23 @@ export default function NumPad({ onConfirm, label }: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4">
       {/* Display importo */}
-      <div className="text-center text-4xl font-bold py-4 text-slate-900 dark:text-white">
-        € {display}
+      <div className="text-center">
+        <p className="text-sm text-slate-400 mb-2">Importo</p>
+        <p className="text-5xl font-bold text-mana-primary">
+          € {display}
+        </p>
       </div>
 
-      {/* Tastierino */}
+      {/* Tastierino 3x4 */}
       <div className="grid grid-cols-3 gap-2">
         {keys.map((key) => (
           <button
             key={key}
             type="button"
             onClick={() => handleKey(key)}
-            className="h-14 rounded-xl bg-slate-100 dark:bg-slate-800 text-xl font-semibold text-slate-800 dark:text-slate-200 active:bg-slate-200 dark:active:bg-slate-700 transition-colors"
+            className="h-16 rounded-xl bg-mana-card hover:bg-mana-card-hover text-xl font-semibold text-white active:scale-95 transition-all"
           >
             {key}
           </button>
@@ -56,7 +59,7 @@ export default function NumPad({ onConfirm, label }: Props) {
       <button
         type="button"
         onClick={handleConfirm}
-        className="mt-2 w-full h-14 rounded-2xl bg-indigo-600 text-white text-lg font-bold active:bg-indigo-700 transition-colors"
+        className="mt-2 w-full h-14 rounded-2xl bg-mana-green hover:bg-mana-green-hover text-white text-lg font-bold active:scale-95 transition-all shadow-lg"
       >
         {label}
       </button>

@@ -1,73 +1,109 @@
-# React + TypeScript + Vite
+# 🎮 ManaCredit - PWA SaaS per Negozi TCG
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**ManaCredit** è una Progressive Web App ultra-ottimizzata per gestire il credito negozio (buoni) dei clienti in cassa. Pensata per TCG shops e fumetterie: operazioni da 2-3 tap, zero caricamenti, interfaccia a prova di errore.
 
-Currently, two official plugins are available:
+**Sviluppato da:** Marco | **Tech Stack:** React, Vite, Tailwind, Firebase, TypeScript
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## ⚡ Caratteristiche Principali
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Multi-Tenancy:** Isolamento dati per shop via Security Rules + Custom Claims
+- **Atomic Transactions:** Batch Firestore garantisce atomicità saldo + audit log
+- **QR Code Generation:** Genera QR dinamico lato client (niente salvataggio DB)
+- **Offline-Ready:** PWA con Service Worker, caching UI, transazioni online-only
+- **Dark Mode:** UI dark mode ottimizzata per ambienti negozio
+- **Mobile-First:** Tailwind CSS responsive da smartphone/tablet
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🚀 Quick Start
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Prerequisiti
+- Node.js 20+
+- Firebase CLI
+- Progetto Firebase existente
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Setup
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+# 1. Clona repo
+git clone <repo>
+cd manaCredit
+
+# 2. Installa dipendenze
+npm install
+cd functions && npm install && cd ..
+
+# 3. Configura variabili ambiente
+cp .env.local.example .env.local
+# Modifica con tue credenziali Firebase
+
+# 4. Sviluppo locale
+npm run dev
+
+# 5. Deploy Functions (in /functions)
+npm run deploy
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+**Leggi [SETUP_GUIDE.md](./SETUP_GUIDE.md) per guida completa.**
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 📁 Struttura Progetto
+
 ```
+manaCredit/
+├── src/
+│   ├── pages/              # Route pages
+│   ├── components/         # Componenti riusabili
+│   ├── hooks/              # Custom hooks
+│   ├── context/            # Context API
+│   ├── lib/                # Utilities
+│   └── types/              # TypeScript types
+│
+├── functions/              # Cloud Functions
+├── firestore.rules         # Security Rules
+├── vite.config.ts          # PWA + Vite config
+├── tailwind.config.ts      # Tema mana-*
+└── SETUP_GUIDE.md
+```
+
+---
+
+## 🎨 Palette Colori
+
+- **`mana-bg`**: `#0B0C10` - Charcoal (sfondo)
+- **`mana-card`**: `#14161C` - Dark gray
+- **`mana-primary`**: `#8B5CF6` - Viola (CTA principale)
+- **`mana-green`**: `#10B981` - Verde (carica +)
+- **`mana-orange`**: `#F97316` - Arancione (scala -)
+
+---
+
+## 🛠️ Comandi Build
+
+```bash
+npm run dev        # Dev server (Vite HMR)
+npm run build      # Build produzione
+npm run preview    # Preview build locale
+npm run lint       # ESLint check
+```
+
+---
+
+## 🔐 Sicurezza
+
+- **Firestore Rules:** Multi-tenancy via `shop_id` claim
+- **Batch Atomicity:** Transazione = update saldo + create log
+- **JWT Custom Claims:** Ogni cassiere ha `shop_id` + `role`
+- **No negative balances:** Validation client + Firestore
+- **Immutable logs:** Transazioni append-only
+
+---
+
+## 📝 Licenza
+
+Proprietario - Marco Xormac5
+
+**Last Updated:** April 2, 2026

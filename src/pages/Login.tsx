@@ -13,44 +13,61 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-mana-bg px-4">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-sm bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-lg flex flex-col gap-4"
+        className="w-full max-w-sm bg-mana-card rounded-3xl p-8 shadow-2xl border border-slate-700 flex flex-col gap-5"
       >
-        <h1 className="text-2xl font-bold text-center text-slate-900 dark:text-white">
-          TCG Wallet
-        </h1>
-        <p className="text-sm text-center text-slate-500">Accedi al tuo negozio</p>
+        {/* Header */}
+        <div className="text-center mb-4">
+          <h1 className="text-4xl font-bold text-mana-primary mb-2">ManaCredit</h1>
+          <p className="text-sm text-slate-400">Staff Access</p>
+        </div>
 
+        {/* Error */}
         {error && (
-          <p className="text-sm text-red-500 bg-red-50 dark:bg-red-950 rounded-lg p-2 text-center">
-            {error}
-          </p>
+          <div className="bg-mana-orange/20 border border-mana-orange rounded-xl p-3">
+            <p className="text-sm text-mana-orange font-medium">{error}</p>
+          </div>
         )}
 
-        <input
-          type="email"
-          placeholder="Email"
-          required
-          autoComplete="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="h-12 rounded-xl border border-slate-300 dark:border-slate-700 bg-transparent px-4 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          required
-          autoComplete="current-password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="h-12 rounded-xl border border-slate-300 dark:border-slate-700 bg-transparent px-4 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
+        {/* Email */}
+        <div>
+          <label className="text-xs text-slate-400 font-semibold uppercase mb-2 block">Email</label>
+          <input
+            type="email"
+            placeholder="staff@shop.com"
+            required
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full h-12 rounded-xl border border-slate-700 bg-slate-900/50 px-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-mana-primary focus:border-transparent transition-all"
+          />
+        </div>
 
+        {/* Password */}
+        <div>
+          <label className="text-xs text-slate-400 font-semibold uppercase mb-2 block">Password</label>
+          <input
+            type="password"
+            placeholder="••••••••"
+            required
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full h-12 rounded-xl border border-slate-700 bg-slate-900/50 px-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-mana-primary focus:border-transparent transition-all"
+          />
+        </div>
+
+        {/* Submit */}
         <BigButton type="submit" disabled={loading}>
           {loading ? 'Accesso…' : 'Accedi'}
         </BigButton>
+
+        {/* Footer */}
+        <p className="text-xs text-center text-slate-500">
+          ManaCredit v1.0 • Powered by Firebase
+        </p>
       </form>
     </div>
   );

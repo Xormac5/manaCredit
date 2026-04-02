@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useWallet } from '../hooks/useWallet';
 import { useTransactions } from '../hooks/useTransactions';
+import { useCashierOperations } from '../hooks/useCashierOperations';
 import BigButton from '../components/ui/BigButton';
 import BottomSheet from '../components/ui/BottomSheet';
 import NumPad from '../components/ui/NumPad';
@@ -16,8 +17,9 @@ export default function CustomerCard() {
   const walletId = params.get('id') ?? '';
   const searchTerm = params.get('search') ?? '';
 
-  const { getWallet, searchWallets, updateBalance } = useWallet();
-  const { addTransaction, getByWallet } = useTransactions();
+  const { getWallet, searchWallets } = useWallet();
+  const { getByWallet } = useTransactions();
+  const { processTransaction } = useCashierOperations();
 
   const [wallet, setWallet] = useState<(Wallet & { id: string }) | null>(null);
   const [results, setResults] = useState<(Wallet & { id: string })[]>([]);
@@ -54,8 +56,7 @@ export default function CustomerCard() {
     const delta = type === 'credit' ? amount : -amount;
 
     try {
-      const newBalance = await updateBalance(wallet.id, delta);
-      await addTransaction({
+      const newBalance = await processTransaction({
         walletId: wallet.id,
         customerName: wallet.customerName,
         amount,
@@ -74,117 +75,131 @@ export default function CustomerCard() {
   // Lista risultati ricerca
   if (!wallet && results.length > 0) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-4">
-        <button onClick={() => navigate('/')} className="text-indigo-600 mb-4 text-sm">
+      <div className="min-h-screen bg-mana-bg p-4 flex flex-col">
+        <button onClick={() => navigate('/')} className="text-mana-primary hover:text-mana-primary-hover mb-4 text-sm font-semibold">
           ← Torna alla dashboard
         </button>
-        <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
+        <h2 className="text-2xl font-bold text-white mb-4">
           Risultati per "{searchTerm}"
         </h2>
-        <ul className="flex flex-col gap-2">
+        <div className="flex-1 flex flex-col gap-2 overflow-y-auto">
           {results.map((w) => (
-            <li key={w.id}>
-              <button
-                onClick={() => selectFromResults(w)}
-                className="w-full bg-white dark:bg-slate-900 rounded-xl p-4 text-left shadow-sm"
-              >
-                <span className="font-bold text-slate-900 dark:text-white">
-                  {w.customerName}
-                </span>
-                {w.nickname && (
-                  <span className="text-slate-500 ml-2">({w.nickname})</span>
-                )}
-                <span className="float-right font-bold text-indigo-600">
+            <button
+              key={w.id}
+              onClick={() => selectFromResults(w)}
+              className="bg-mana-card hover:bg-mana-card-hover rounded-2xl p-4 text-left border border-slate-700 transition-all active:scale-95"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="font-bold text-white text-lg">
+                    {w.customerName}
+                  </span>
+                  {w.nickname && (
+                    <span className="text-slate-400 ml-2">({w.nickname})</span>
+                  )}
+                </div>
+                <span className="font-bold text-mana-green text-xl">
                   €{w.balance.toFixed(2)}
                 </span>
-              </button>
-            </li>
+              </div>
+            </button>
           ))}
-        </ul>
+        </div>
       </div>
     );
   }
 
-  // Scheda cliente
+  // Caricamento
   if (!wallet) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4">
-        <p className="text-slate-500">Caricamento cliente…</p>
+      <div className="min-h-screen bg-mana-bg flex items-center justify-center p-4">
+        <p className="text-slate-400">Caricamento cliente…</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col">
+    <div className="min-h-screen bg-mana-bg flex flex-col pb-20">
       {/* Header */}
-      <header className="bg-indigo-600 text-white px-4 py-3 flex items-center gap-3">
-        <button onClick={() => navigate('/')} className="text-2xl">←</button>
-        <div>
-          <h1 className="font-bold text-lg">{wallet.customerName}</h1>
+      <header className="bg-mana-card border-b border-slate-700 text-white px-4 py-4 flex items-center gap-4">
+        <button onClick={() => navigate('/')} className="text-white hover:text-mana-primary transition-colors text-2xl">
+          ←
+        </button>
+        <div className="flex-1">
+          <h1 className="font-bold text-xl text-white">{wallet.customerName}</h1>
           {wallet.nickname && (
-            <p className="text-sm opacity-80">{wallet.nickname}</p>
+            <p className="text-sm text-slate-400">{wallet.nickname}</p>
           )}
         </div>
       </header>
 
-      <main className="flex-1 flex flex-col gap-4 p-4">
-        {/* Saldo */}
-        <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 text-center shadow-sm">
-          <p className="text-sm text-slate-500 mb-1">Saldo attuale</p>
-          <p className="text-5xl font-extrabold text-slate-900 dark:text-white">
+      <main className="flex-1 flex flex-col gap-5 p-4">
+        {/* Saldo - Elemento principale */}
+        <div className="bg-mana-card rounded-3xl p-8 text-center shadow-lg border border-slate-700">
+          <p className="text-sm text-slate-400 mb-2">Saldo attuale</p>
+          <p className="text-6xl font-extrabold text-mana-primary mb-1">
             €{wallet.balance.toFixed(2)}
           </p>
+          <p className="text-xs text-slate-500">Customer ID: {wallet.id}</p>
         </div>
 
-        {/* Azioni */}
+        {/* Azioni veloce */}
         <div className="grid grid-cols-2 gap-3">
           <BigButton variant="success" onClick={() => setSheetMode('credit')}>
-            + CARICA
+            ➕ CARICA
           </BigButton>
           <BigButton variant="danger" onClick={() => setSheetMode('debit')}>
-            − SCALA
+            ➖ SCALA
           </BigButton>
         </div>
 
         {/* Ultimi movimenti */}
-        <section>
-          <h2 className="text-sm font-semibold text-slate-500 mb-2">
-            Ultimi movimenti
+        <section className="flex-1 min-h-0 flex flex-col">
+          <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-2">
+            Movimenti Recenti
           </h2>
-          <div className="bg-white dark:bg-slate-900 rounded-xl p-3 shadow-sm">
-            <TransactionList transactions={txs} />
+          <div className="bg-mana-card/50 rounded-2xl p-3 shadow-md border border-slate-700 flex-1 overflow-y-auto">
+            {txs.length > 0 ? (
+              <TransactionList transactions={txs} />
+            ) : (
+              <p className="text-center text-slate-500 py-6">Nessun movimento</p>
+            )}
           </div>
         </section>
       </main>
 
       {/* Bottom Sheet operazione */}
-      <BottomSheet open={sheetMode !== null} onClose={() => setSheetMode(null)}>
-        <h3 className="text-lg font-bold text-center text-slate-900 dark:text-white mb-3">
-          {sheetMode === 'credit' ? '+ Carica credito' : '− Scala credito'}
-        </h3>
-
+      <BottomSheet 
+        open={sheetMode !== null} 
+        onClose={() => setSheetMode(null)}
+        title={sheetMode === 'credit' ? '➕ Carica Credito' : '➖ Scala Credito'}
+      >
         {/* Causale rapida */}
-        <div className="flex flex-wrap gap-2 justify-center mb-4">
-          {reasons.map((r) => (
-            <button
-              key={r}
-              onClick={() => setReason(r)}
-              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                reason === r
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
-              }`}
-            >
-              {r}
-            </button>
-          ))}
+        <div className="mb-6">
+          <p className="text-xs text-slate-400 font-semibold uppercase mb-3">Seleziona causale</p>
+          <div className="flex flex-wrap gap-2">
+            {reasons.map((r) => (
+              <button
+                key={r}
+                onClick={() => setReason(r)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  reason === r
+                    ? 'bg-mana-primary text-white shadow-lg shadow-mana-primary/30'
+                    : 'bg-mana-card-hover text-slate-300 hover:bg-mana-card'
+                }`}
+              >
+                {r}
+              </button>
+            ))}
+          </div>
         </div>
 
         <NumPad
-          label={sheetMode === 'credit' ? 'Conferma Carica' : 'Conferma Scala'}
+          label={sheetMode === 'credit' ? '✓ Conferma Carica' : '✓ Conferma Scala'}
           onConfirm={handleConfirm}
         />
       </BottomSheet>
     </div>
+  );
   );
 }
