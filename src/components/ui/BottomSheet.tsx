@@ -18,7 +18,7 @@ export default function BottomSheet({ open, onClose, children, title }: Props) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col justify-end">
+    <div className="fixed inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 flex flex-col justify-end">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 

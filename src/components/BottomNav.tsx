@@ -6,8 +6,8 @@ export default function BottomNav() {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-mana-card/95 backdrop-blur-md border-t border-slate-700 pb-safe z-50 shadow-2xl">
-      <div className="flex items-center justify-around px-4 py-3 max-w-md mx-auto">
+    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-mana-card/95 backdrop-blur-md border-t border-slate-700 pb-safe z-50 shadow-2xl">
+      <div className="flex items-center justify-around px-4 py-3 w-full">
         {/* Dashboard */}
         <Link
           to="/"

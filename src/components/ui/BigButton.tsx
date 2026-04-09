@@ -8,7 +8,7 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
 const variants: Record<string, string> = {
   primary: 'bg-mana-primary hover:bg-mana-primary-hover active:scale-95 text-white',
   success: 'bg-mana-green hover:bg-mana-green-hover active:scale-95 text-white',
-  danger: 'bg-mana-orange hover:bg-mana-orange-hover active:scale-95 text-white',
+  danger: 'bg-mana-danger hover:bg-mana-danger-hover active:scale-95 text-white',
 };
 
 export default function BigButton({

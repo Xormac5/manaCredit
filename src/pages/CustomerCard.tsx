@@ -132,7 +132,7 @@ export default function CustomerCard() {
         </div>
       </header>
 
-      <main className="flex-1 flex flex-col gap-5 p-4">
+      <main className="flex flex-col gap-5 p-4">
         {/* Saldo - Elemento principale */}
         <div className="bg-mana-card rounded-3xl p-8 text-center shadow-lg border border-slate-700">
           <p className="text-sm text-slate-400 mb-2">Saldo attuale</p>
@@ -144,20 +144,22 @@ export default function CustomerCard() {
 
         {/* Azioni veloce */}
         <div className="grid grid-cols-2 gap-3">
-          <BigButton variant="success" onClick={() => setSheetMode('credit')}>
-            ➕ CARICA
+          <BigButton variant="success" onClick={() => setSheetMode('credit')} className="flex flex-col items-center justify-center text-xs leading-none gap-0.5">
+            <span className="font-extrabold tracking-wide">+ ADD CREDIT</span>
+            <span className="opacity-70 font-normal scale-90 mb-0.5">(CARICA)</span>
           </BigButton>
-          <BigButton variant="danger" onClick={() => setSheetMode('debit')}>
-            ➖ SCALA
+          <BigButton variant="danger" onClick={() => setSheetMode('debit')} className="flex flex-col items-center justify-center text-xs leading-none gap-0.5">
+            <span className="font-extrabold tracking-wide">- CHARGE CREDIT</span>
+            <span className="opacity-70 font-normal scale-90 mb-0.5">(SCALA)</span>
           </BigButton>
         </div>
 
         {/* Ultimi movimenti */}
-        <section className="flex-1 min-h-0 flex flex-col">
+        <section className="flex flex-col mt-2">
           <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-2">
             Movimenti Recenti
           </h2>
-          <div className="bg-mana-card/50 rounded-2xl p-3 shadow-md border border-slate-700 flex-1 overflow-y-auto">
+          <div className="bg-mana-card/50 rounded-2xl p-3 shadow-md border border-slate-700 overflow-visible">
             {txs.length > 0 ? (
               <TransactionList transactions={txs} />
             ) : (
@@ -177,19 +179,25 @@ export default function CustomerCard() {
         <div className="mb-6">
           <p className="text-xs text-slate-400 font-semibold uppercase mb-3">Seleziona causale</p>
           <div className="flex flex-wrap gap-2">
-            {reasons.map((r) => (
-              <button
-                key={r}
-                onClick={() => setReason(r)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                  reason === r
-                    ? 'bg-mana-primary text-white shadow-lg shadow-mana-primary/30'
-                    : 'bg-mana-card-hover text-slate-300 hover:bg-mana-card'
-                }`}
-              >
-                {r}
-              </button>
-            ))}
+            {reasons.map((r) => {
+              const activeColor = sheetMode === 'credit' 
+                ? 'bg-mana-green shadow-mana-green/30' 
+                : 'bg-mana-danger shadow-mana-danger/30';
+              
+              return (
+                <button
+                  key={r}
+                  onClick={() => setReason(r)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                    reason === r
+                      ? `${activeColor} text-white shadow-lg`
+                      : 'bg-mana-card-hover text-slate-300 hover:bg-mana-card'
+                  }`}
+                >
+                  {r}
+                </button>
+              );
+            })}
           </div>
         </div>
 

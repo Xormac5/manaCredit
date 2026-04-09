@@ -15,6 +15,8 @@ const config: Config = {
           'green-hover': '#059669',
           'orange': '#F97316',      // Arancione caldo (scarico -)
           'orange-hover': '#EA580C',
+          'danger': '#EF4444',      // Rosso errore/scala
+          'danger-hover': '#DC2626',
         },
       },
       keyframes: {

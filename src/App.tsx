@@ -26,53 +26,57 @@ function RequireAuth({ children }: { children: ReactNode }) {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/qr/:customerId" element={<QrViewerPage />} />
-          <Route
-            path="/"
-            element={
-              <RequireAuth>
-                <Dashboard />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/scan"
-            element={
-              <RequireAuth>
-                <ScanPage />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/customer"
-            element={
-              <RequireAuth>
-                <CustomerCard />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/new-customer"
-            element={
-              <RequireAuth>
-                <NewCustomer />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/history"
-            element={
-              <RequireAuth>
-                <CashHistory />
-              </RequireAuth>
-            }
-          />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+    <div className="bg-black min-h-screen flex justify-center">
+      <div className="w-full max-w-md bg-mana-bg min-h-screen relative shadow-2xl border-x border-slate-800/30 overflow-x-hidden">
+        <AuthProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/qr/:customerId" element={<QrViewerPage />} />
+              <Route
+                path="/"
+                element={
+                  <RequireAuth>
+                    <Dashboard />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/scan"
+                element={
+                  <RequireAuth>
+                    <ScanPage />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/customer"
+                element={
+                  <RequireAuth>
+                    <CustomerCard />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/new-customer"
+                element={
+                  <RequireAuth>
+                    <NewCustomer />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/history"
+                element={
+                  <RequireAuth>
+                    <CashHistory />
+                  </RequireAuth>
+                }
+              />
+            </Routes>
+          </BrowserRouter>
+        </AuthProvider>
+      </div>
+    </div>
   );
 }

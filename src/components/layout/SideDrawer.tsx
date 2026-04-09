@@ -24,15 +24,15 @@ export default function SideDrawer({ isOpen, onClose, shopName }: SideDrawerProp
   };
 
   return (
-    <>
+    <div className="fixed inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-md z-50 pointer-events-none">
       {/* Backdrop overlay */}
       <div 
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity animate-in fade-in duration-200"
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity animate-in fade-in duration-200 pointer-events-auto"
         onClick={onClose}
       />
       
       {/* Drawer */}
-      <div className="fixed inset-y-0 left-0 w-3/4 max-w-sm bg-mana-bg border-r border-slate-800/50 z-50 shadow-2xl flex flex-col pt-6 pb-8 animate-in slide-in-from-left duration-300">
+      <div className="absolute inset-y-0 left-0 w-3/4 max-w-[80%] bg-mana-bg border-r border-slate-800/50 shadow-2xl flex flex-col pt-6 pb-8 animate-in slide-in-from-left duration-300 pointer-events-auto">
         
         {/* Header Drawer */}
         <div className="px-6 pb-6 border-b border-slate-800/50">
@@ -89,8 +89,7 @@ export default function SideDrawer({ isOpen, onClose, shopName }: SideDrawerProp
             <span>Esci</span>
           </button>
         </div>
-
       </div>
-    </>
+    </div>
   );
 }
