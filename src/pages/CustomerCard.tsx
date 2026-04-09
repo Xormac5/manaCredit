@@ -180,19 +180,21 @@ export default function CustomerCard() {
           <p className="text-xs text-slate-400 font-semibold uppercase mb-3">Seleziona causale</p>
           <div className="flex flex-wrap gap-2">
             {reasons.map((r) => {
-              const activeColor = sheetMode === 'credit' 
-                ? 'bg-mana-green shadow-mana-green/30' 
-                : 'bg-mana-danger shadow-mana-danger/30';
-              
+              const isActive = reason === r;
               return (
                 <button
                   key={r}
                   onClick={() => setReason(r)}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                    reason === r
-                      ? `${activeColor} text-white shadow-lg`
-                      : 'bg-mana-card-hover text-slate-300 hover:bg-mana-card'
+                    isActive 
+                      ? 'shadow-lg bg-transparent border-2' 
+                      : 'bg-transparent text-slate-400 hover:text-white border border-slate-700'
                   }`}
+                  style={isActive ? {
+                    borderColor: 'var(--mana-primary)',
+                    color: 'var(--mana-primary)',
+                    boxShadow: '0 0 10px rgba(139, 92, 246, 0.2)'
+                  } : undefined}
                 >
                   {r}
                 </button>
