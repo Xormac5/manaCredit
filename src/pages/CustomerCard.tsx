@@ -135,9 +135,9 @@ export default function CustomerCard() {
       <main className="flex flex-col gap-5 p-4">
         {/* Saldo - Elemento principale */}
         <div className="bg-mana-card rounded-3xl p-8 text-center shadow-lg border border-slate-700">
-          <p className="text-sm text-slate-400 mb-2">Saldo attuale</p>
-          <p className="text-6xl font-extrabold text-mana-primary mb-1">
-            €{wallet.balance.toFixed(2)}
+          <p className="text-[10px] text-slate-500 font-bold tracking-widest uppercase mb-1">AVAILABLE MANA BALANCE</p>
+          <p className="text-5xl font-extrabold text-mana-green mb-1">
+            € {wallet.balance.toFixed(2)}
           </p>
           <p className="text-xs text-slate-500">Customer ID: {wallet.id}</p>
         </div>
@@ -179,27 +179,19 @@ export default function CustomerCard() {
         <div className="mb-6">
           <p className="text-xs text-slate-400 font-semibold uppercase mb-3">Seleziona causale</p>
           <div className="flex flex-wrap gap-2">
-            {reasons.map((r) => {
-              const isActive = reason === r;
-              return (
-                <button
-                  key={r}
-                  onClick={() => setReason(r)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                    isActive 
-                      ? 'shadow-lg bg-transparent border-2' 
-                      : 'bg-transparent text-slate-400 hover:text-white border border-slate-700'
-                  }`}
-                  style={isActive ? {
-                    borderColor: 'var(--mana-primary)',
-                    color: 'var(--mana-primary)',
-                    boxShadow: '0 0 10px rgba(139, 92, 246, 0.2)'
-                  } : undefined}
-                >
-                  {r}
-                </button>
-              );
-            })}
+            {reasons.map((r) => (
+              <button
+                key={r}
+                onClick={() => setReason(r)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  reason === r
+                    ? 'bg-mana-primary/10 text-mana-primary border-2 border-mana-primary shadow-lg'
+                    : 'bg-transparent text-slate-400 hover:text-white border border-slate-700'
+                }`}
+              >
+                {r}
+              </button>
+            ))}
           </div>
         </div>
 

@@ -36,7 +36,7 @@ export default function NumPad({ onConfirm, label }: Props) {
       {/* Display importo */}
       <div className="text-center">
         <p className="text-sm text-slate-400 mb-2">Importo</p>
-        <p className="text-5xl font-bold text-mana-primary">
+        <p className="text-5xl font-bold text-mana-green">
           € {display}
         </p>
       </div>
