@@ -12,7 +12,9 @@ export default function CashHistory() {
   const [txs, setTxs] = useState<(Transaction & { id: string })[]>([]);
 
   useEffect(() => {
-    getDailyTransactions(new Date(date)).then(setTxs);
+    // Parsa la data come fuso locale (non UTC)
+    const [y, m, d] = date.split('-').map(Number);
+    getDailyTransactions(new Date(y, m - 1, d)).then(setTxs);
   }, [date]);
 
   async function handleReversal(tx: Transaction & { id: string }) {
@@ -23,7 +25,8 @@ export default function CashHistory() {
     await processReversal(tx);
     
     // Ricarica lista
-    getDailyTransactions(new Date(date)).then(setTxs);
+    const [y, m, d] = date.split('-').map(Number);
+    getDailyTransactions(new Date(y, m - 1, d)).then(setTxs);
   }
 
   return (

@@ -101,10 +101,10 @@ export function useTransactions() {
   ): Promise<(Transaction & { id: string })[]> {
     if (USE_MOCK) {
       const mockData = getMockData();
-      const start = new Date(date);
-      start.setHours(0, 0, 0, 0);
-      const end = new Date(date);
-      end.setHours(23, 59, 59, 999);
+      // Costruisci range nel fuso locale
+      const [year, month, day] = [date.getFullYear(), date.getMonth(), date.getDate()];
+      const start = new Date(year, month, day, 0, 0, 0, 0);
+      const end = new Date(year, month, day, 23, 59, 59, 999);
       const txs = Object.entries(mockData.transactions)
         .map(([txId, tx]) => ({ ...tx, id: txId }))
         .filter((tx) => {
