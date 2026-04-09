@@ -14,6 +14,7 @@ export default function QrScanner({ onScan, onError }: Props) {
   useEffect(() => {
     if (!containerRef.current) return;
 
+    let unmounted = false;
     const scanner = new Html5Qrcode(containerRef.current.id);
     scannerRef.current = scanner;
 
@@ -22,20 +23,33 @@ export default function QrScanner({ onScan, onError }: Props) {
         { facingMode: 'environment' },
         { fps: 10, qrbox: { width: 250, height: 250 } },
         (text) => {
-          scanner.stop().catch(() => {});
-          onScan(text);
+          if (!unmounted) {
+            scanner.stop().catch(() => {});
+            onScan(text);
+          }
         },
         () => {},
       )
-      .then(() => setStarted(true))
-      .catch((err) => onError?.(String(err)));
+      .then(() => {
+        if (unmounted) {
+          scanner.stop().catch(() => {});
+        } else {
+          setStarted(true);
+        }
+      })
+      .catch((err) => {
+        if (!unmounted && onError) onError(String(err));
+      });
 
     return () => {
-      if (scannerRef.current?.isScanning) {
-        scannerRef.current.stop().catch(() => {});
+      unmounted = true;
+      try {
+        scanner.stop().catch(() => {});
+      } catch (e) {
+        // Ignora errori di stop se lo scanner non era ancora avviato
       }
     };
-  }, []);
+  }, [onScan, onError]);
 
   return (
     <div className="w-full flex flex-col items-center gap-4">

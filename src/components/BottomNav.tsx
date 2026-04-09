@@ -25,6 +25,21 @@ export default function BottomNav() {
           </span>
         </Link>
 
+        {/* New Customer */}
+        <Link
+          to="/new-customer"
+          className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all ${
+            isActive('/new-customer')
+              ? 'text-mana-primary bg-mana-primary/10'
+              : 'text-slate-400 hover:text-slate-300 hover:bg-mana-card-hover'
+          }`}
+        >
+          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+             <path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+          </svg>
+          <span className="text-[11px] font-bold uppercase tracking-widest">Nuovo</span>
+        </Link>
+
         {/* Scan */}
         <Link
           to="/scan"

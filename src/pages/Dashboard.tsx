@@ -7,6 +7,7 @@ import { useAuthActions } from '../hooks/useAuth';
 import { useTransactions } from '../hooks/useTransactions';
 import TransactionList from '../components/TransactionList';
 import BottomNav from '../components/BottomNav';
+import Header from '../components/layout/Header';
 import type { Transaction } from '../types';
 
 export default function Dashboard() {
@@ -21,10 +22,16 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!shopId) return;
-    // Carica nome negozio
-    getDoc(doc(db, 'shops', shopId)).then((snap) => {
-      if (snap.exists()) setShopName(snap.data().name ?? "Dragon's Lair Comics");
-    });
+    
+    if (import.meta.env.VITE_USE_MOCK_DATA === 'true') {
+      setShopName("Dragon's Lair Comics");
+    } else {
+      // Carica nome negozio
+      getDoc(doc(db, 'shops', shopId)).then((snap) => {
+        if (snap.exists()) setShopName(snap.data().name ?? "Dragon's Lair Comics");
+      }).catch(console.error);
+    }
+
     // Ultimi movimenti
     getRecentGlobal(5).then(setRecent);
   }, [shopId]);
@@ -37,21 +44,10 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-mana-bg flex flex-col pb-24 font-sans text-white">
-      {/* Header */}
-      <header className="px-4 pt-6 pb-4 flex items-center justify-between border-b border-slate-800/50">
-        <button onClick={signOut} className="p-2 -ml-2 text-slate-400 hover:text-mana-primary transition-colors">
-          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
-        <span className="font-bold text-sm tracking-wide">{shopName || "Dragon's Lair Comics"}</span>
-        <div className="w-8 h-8 rounded-full bg-mana-card border border-mana-primary/30 overflow-hidden">
-          <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix&backgroundColor=b6e3f4" alt="User avatar" className="w-full h-full object-cover" />
-        </div>
-      </header>
+    <div className="min-h-screen bg-mana-bg pb-24 font-sans text-white">
+      <Header shopName={shopName} />
 
-      <main className="flex-1 px-4 flex flex-col">
+      <main className="px-4">
         <div className="mt-2 mb-8">
           <p className="text-[10px] text-slate-500 font-bold tracking-widest uppercase mb-1">Station 02</p>
           <h1 className="text-3xl font-extrabold tracking-tight">Staff Dashboard</h1>
@@ -90,7 +86,7 @@ export default function Dashboard() {
         </form>
 
         {/* Ultimi movimenti */}
-        <section className="flex-1 animate-fade-in">
+        <section className="animate-fade-in mt-2">
           <div className="flex justify-between items-end mb-4 px-1">
             <h2 className="text-base font-semibold text-white">Ultimi Movimenti</h2>
             <Link to="/history" className="text-xs text-mana-primary hover:text-mana-primary-hover transition-colors font-semibold">

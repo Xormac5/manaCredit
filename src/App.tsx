@@ -1,4 +1,4 @@
-﻿import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
@@ -6,6 +6,7 @@ import ScanPage from './pages/ScanPage';
 import CustomerCard from './pages/CustomerCard';
 import CashHistory from './pages/CashHistory';
 import QrViewerPage from './pages/QrViewerPage';
+import NewCustomer from './pages/NewCustomer';
 import type { ReactNode } from 'react';
 
 function RequireAuth({ children }: { children: ReactNode }) {
@@ -51,6 +52,14 @@ export default function App() {
             element={
               <RequireAuth>
                 <CustomerCard />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/new-customer"
+            element={
+              <RequireAuth>
+                <NewCustomer />
               </RequireAuth>
             }
           />
