@@ -7,6 +7,7 @@ import CustomerCard from './pages/CustomerCard';
 import CashHistory from './pages/CashHistory';
 import QrViewerPage from './pages/QrViewerPage';
 import NewCustomer from './pages/NewCustomer';
+import ShopInfo from './pages/ShopInfo';
 import type { ReactNode } from 'react';
 
 function RequireAuth({ children }: { children: ReactNode }) {
@@ -70,6 +71,14 @@ export default function App() {
                 element={
                   <RequireAuth>
                     <CashHistory />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/shop-info"
+                element={
+                  <RequireAuth>
+                    <ShopInfo />
                   </RequireAuth>
                 }
               />
